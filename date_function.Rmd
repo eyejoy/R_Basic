@@ -1,0 +1,380 @@
+
+---
+title: "R에서 날짜 타입 다루기"
+author: by Sung
+date: 2017-09-11
+output:
+  html_document:
+    toc: true
+    toc_float: true
+mainfont: NanumGothic
+fontsize: 12pt
+---
+```{r include=F}
+# global option
+# https://yihui.name/knitr/options/#code-chunk
+knitr::opts_chunk$set(
+  comment = "#>",
+  collapse = TRUE,
+  eval=T,
+  tidy=F,
+  message=F,
+  warning=F
+)
+library(lubridate)
+library(tidyverse)
+```
+---  
+
+## 날짜-시간 클래스
+
+`POSIX` 날짜/시간 클래스는 운영계의 인터페이스를 표현
+
+ - `POSIX`클래스는 두 종류(`POSIXct`와 `POSIXlt`)가 있고 이들의 차이는 저장 방식
+
+    클래스   | 설명
+    ---------|---------------------------------------
+    `Date`   | 일반적인 날짜 클래스 (yyyy-mm-dd 형태)
+    `POSIXct`| 1970년 1월 1일 기점으로 시간을 초로 저장
+    `POSIXlt`| 연, 월, 시, 분, 초를 각각 저장
+
+    * 참고: http://blog.naver.com/dfdf4912/220623488198
+
+---
+
+## 날짜 포멧
+
+아래와 같은 다양한 포멧이 존재
+
+ - 시간대 정보는 `OlsonNames()`로 확인 가능 (참고: https://en.wikipedia.org/wiki/Time_zone)
+
+    포멧      | 정의                                            | 예제
+    ----------|-------------------------------------------------|-------------------
+    `%a`      | 요일 약어                                       | Sun, Thu
+    `%A`      | 요일 이름                                       | Sunday, Thusday
+    `%b or %h`| 월 약어                                         | May, Jul
+    `%B`      | 월 이름                                         | May, Jul
+    `%d`      | 일자(01~31)                                     | 27, 01
+    `%j`      | 1년 중 일자(001~366)                            | 148, 188
+    `%m`      | 월(01~12)                                       | 05, 07
+    `%U`      | 주(01~53, 주 시작일은 일요일)                   | 22, 27
+    `%w`      | 요일(0~6, 0은 일요일)                           | 0, 4
+    `%W`      | 주(00~53, 주 시작일은 월요일)                   | 21, 27
+    `%y`      | 두자리 년도                                     | 84, 05
+    `%Y`      | 네자리 년도(00~68: 20xx, 69~90: 19xx)           | 1984, 2005
+    `%C`      | 세기                                            | 19, 20
+    `%D`      | %m/%d/%y 형                                     | 05/27/84, 07/07/05
+    `%u`      | 요일(1~7, 1은 월요일)                           | 7, 4
+    `%Z`      | 시간대(KST: 한국, GMT: 영국, UTC: 세계 표준)    | KST, UTC
+    
+    * 참고: https://www.r-bloggers.com/date-formats-in-r/
+
+---
+
+## R Code: 날짜 읽기
+
+**날짜 데이터 >> `POSIX` 클래스로 변환**
+
+ - `strptime`: 포멧에 맞는 날짜 데이터를 입력
+
+ - `ISOdate`: 날짜 데이터의 "년, 월, 일, 시, 분, 초"를 입력
+
+    ```{r}
+    strptime('16/Oct/2005:07:51:00',format='%d/%b/%Y:%H:%M:%S')
+    ISOdate(2005,10,21,18,47,22)
+    ```
+
+**날짜 데이터 >> "년, 월, 일, 시, 분, 초"로 변환**
+
+ - 각각 value가 존재(년: year, 월: mon, 일: mday, 시: hour, 분: hour, 초: sec, 요일: wday, 1년 중 일수: yday, 시간대: zone)
+
+ - `format` 함수도 사용 가능
+
+    ```{r}
+    # 년, 월, 일, 시, 분, 초 출력
+    test_date = as.POSIXlt("2017-09-06 07:01:00")
+    test_date$year
+    
+    # format 함수 사용
+    format(test_date, "%Y")
+    strftime(test_date, "%Y")
+    ```
+
+
+**문자열 >> 날짜 데이터로 변환**
+
+ - 함수: `format`, `as.Date`, `strptime`, `as.POSIXlt`
+    
+    ```{r}
+    # format function
+    format(Sys.time(), "%a, %A, %b, %B, %d, %D, %X, %Y , %Z")
+    format("170906", format="%y%m%d")
+    
+    # as.Date function
+    as.Date('2017-09-06')
+    as.Date('2017/09/06')
+    as.Date('06/09/2017', format='%m/%d/%Y')
+    as.Date('April 09, 2017',format='%B %d, %Y')
+    as.Date('06JUN17',format='%d%b%y')
+    as.Date('170906',format='%y%m%d')
+    
+    # weekdays function
+    bdays <- c(tukey=as.Date('1915-06-16'), fisher=as.Date('1890-02-17'),
+               cramer=as.Date('1893-09-25'), kendall=as.Date('1907-09-06'))
+    weekdays(bdays)
+    
+    # strptime function
+    strptime('170906',format='%y%m%d', tz="Asia/Seoul")
+    
+    # as.POSIXlt function
+    dts <- c("2005-10-21 18:47:22", "2005-12-24 16:39:58", "2005-10-28 07:30:05 PDT")
+    as.POSIXlt(dts)
+    
+    mydates <- c(1127056501, 1104295502, 1129233601, 1113547501, 
+                 1119826801, 1132519502, 1125298801, 1113289201)
+    class(mydates) <- c('POSIXt','POSIXct')
+    mydates
+    ```
+
+ - 클래스 확인
+
+    ```{r}
+    class(format("170906", format="%y%m%d"))
+    class(as.Date("170906", format="%y%m%d"))
+    class(strptime("170906", format="%y%m%d", tz="Asia/Seoul"))
+    ```
+
+---
+
+## R Code: 날짜/시간 차이
+
+ - 날짜/시간 차이 계산하는 함수: `difftime()`
+
+    + 차이 값의 형태를 설정 가능 (`units: "auto", "secs", "mins", "hours", "days", "weeks"`)
+
+    ```{r}
+    b1 <- as.Date("170806", format="%y%m%d")
+    b2 <- as.Date("170906", format="%y%m%d")
+    difftime(b2, b1, units="days")
+    
+    c1 <- strptime("170806", format="%y%m%d", tz="Asia/Seoul")
+    c2 <- strptime("170906", format="%y%m%d", tz="Asia/Seoul")
+    difftime(c2, c1, units="days")
+    ```
+
+---
+
+## `lubridate` 패키지
+
+ - R에서 날짜와 시간을 다루는 패키지
+
+    - [참고] `tribble` 에서 사용하는 시간 타입: `date`, `time`, `dttm`:
+
+    ```{r}
+    today()
+    now()
+    ```
+
+ - **문자열 >> 날짜 데이터로 변환**
+
+    ```{r}
+    ymd("2017-01-31")
+    mdy("January 31st, 2017")
+    dmy("31-Jan-2017")
+    ymd(20170131)
+    ymd_hms("2017-01-31 20:11:59")
+    mdy_hm("01/31/2017 08:01")
+    ymd(20170131, tz = "UTC")
+    ```
+
+ - **"년, 월, 일, 시, 분, 초" >> 날짜 데이터로 변환**
+
+    ```{r}
+    library(nycflights13)
+    
+    flights %>% 
+    select(year, month, day, hour, minute)
+    
+    flights %>% 
+    select(year, month, day, hour, minute) %>% 
+    mutate(departure = make_datetime(year, month, day, hour, minute))
+    ```
+    
+ - **나머지 타입 >> 날짜 데이터로 변환**
+
+    ```{r}
+    as_datetime(today())
+    as_date(now())
+    as_datetime(60 * 60 * 10)
+    as_date(365 * 10 + 2)
+    ```
+
+ - **date >> "년, 월, 일, 시, 분, 초"로 변환**
+    ```{r}
+    datetime <- ymd_hms("2016-07-08 12:34:56")
+
+    year(datetime)
+    month(datetime)
+    mday(datetime)
+    yday(datetime)
+    wday(datetime)
+    month(datetime, label = T)
+    wday(datetime, label = T, abbr = F)
+    ```
+    
+- **날짜/시간 차이 계산**
+
+    + durations: 시간을 초로 표현
+    ```{r}
+    chaa_age <- today() - ymd(20170425)
+    as.duration(chaa_age)
+    
+    # duration 표현 (기간을 모두 초로 저장)
+    dseconds(15)
+    dminutes(10)
+    dhours(c(12, 24))
+    ddays(0:5)
+    dweeks(3)
+    dyears(1)
+    
+    # DST, 섬머타임 이슈
+    ymd_hms("2016-03-12 13:00:00", tz = "America/New_York") + ddays(1)
+    ```
+    
+
+    + periods: 시간을 주나 달로 표현*
+    ```{r}
+    seconds(15)
+    minutes(10)
+    hours(c(12, 24))
+    days(7)
+    months(1:6)
+    weeks(3)
+    years(1)
+    
+    10 * (months(6) + days(1))
+    
+    # DST, 섬머타임 이슈 해결
+    ymd_hms("2016-03-12 13:00:00", tz = "America/New_York") + days(1)
+    ```
+    
+    
+    + intervals, 시작점과 끝점을 표현
+    ```{r}
+    # 추정치로 계산
+    years(1) / days(1)
+    
+    next_year <- today() + years(1)
+    (today() %--% next_year) / ddays(1)
+    
+    (today() %--% next_year) %/% days(1)
+    ```
+
+- `lubridate` package를 이용한 시간 데이터 전처리
+
+    ```{r}
+    library(dplyr)
+    data(lakers)
+    
+    # raw 데이터 확인
+    (lakers <- lakers %>% tbl_df)
+    
+    # time_index 추가
+    lakers <- lakers %>% 
+    mutate(date = paste(date, time) %>% ymd_hm) %>% 
+        rename(time_index = date) %>% 
+        select(-time)
+    lakers
+    
+    # 월별 평균 데이터 추출
+    lakers %>% 
+        group_by(month(time_index)) %>% 
+        summarize(mean_x = mean(x, na.rm = T), mean_y = mean(y, na.rm = T))
+    
+    # 기간 조건 사용
+    inter <- interval(ymd_hms("2008-10-28 12:00:00"), ymd_hms("2009-03-09 00:33:00"))
+    # inter <- ymd_hms("2008-10-28 12:00:00") %--% ymd_hms("2009-03-09 00:33:00")
+    
+    lakers %>% 
+        filter(time_index %within% inter)
+    ```
+
+---
+
+## 활용 예제
+
+- A게임의 접속 정보가 1분에 한번씩 채널 정보가 기록 됨
+    1. 유저별 최종 접속 시간 추출
+    1. 동일한 채널에 1시간 동안 접속을 유지하고 있는 고객 추출
+    1. 유저별 접속 주기 추출 (1분씩 접속한 기록 제외하고 재접속 시간 계산)
+    
+    ```{r}
+    library(tidyverse)
+    library(lubridate)
+    
+    # 데이터 생성
+    raw_dt <- rbind(
+        data.frame(usr_id="a002", ch="05", 
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 08:00:00"), 
+                             to=as.POSIXct("2017-09-07 09:31:00"), by="min")),
+        data.frame(usr_id="a004", ch="07",
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 08:00:00"), 
+                             to=as.POSIXct("2017-09-07 08:31:00"), by="min")),
+        data.frame(usr_id="a003", ch="05", 
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 08:00:00"), 
+                             to=as.POSIXct("2017-09-07 08:31:00"), by="min")),
+        data.frame(usr_id="a003", ch="11", 
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 21:00:00"), 
+                             to=as.POSIXct("2017-09-07 21:44:00"), by="min")),
+        data.frame(usr_id="a001", ch="12", 
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 19:40:00"), 
+                             to=as.POSIXct("2017-09-07 19:51:00"), by="min")),
+        data.frame(usr_id="a005", ch="15",
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 22:05:00"), 
+                             to=as.POSIXct("2017-09-08 01:22:00"), by="min")),
+        data.frame(usr_id="a006", ch="13", 
+                   gn_dt=seq(from=as.POSIXct("2017-09-07 23:10:00"), 
+                             to=as.POSIXct("2017-09-08 00:38:00"), by="min")))
+    
+    # tibble 형태로 변환
+    raw_dt <- raw_dt %>% 
+        map_if(is.factor, as.character) %>%
+        as_data_frame
+    
+    # 데이터 전처리
+    # https://cran.r-project.org/web/packages/dplyr/vignettes/window-functions.html
+    # http://rfriend.tistory.com/242
+    
+    # 1. 유저별 최종 접속 정보 시간
+    raw_dt %>% 
+        group_by(usr_id) %>% 
+        mutate(tm_rnk=row_number(desc(gn_dt))) %>% 
+        filter(tm_rnk==1) %>% 
+        arrange(usr_id)
+    
+    
+    # 2. 동일한 채널에 1시간 동안 접속을 유지하고 있는 고객 추출 (방법1)
+    raw_dt %>% 
+        group_by(usr_id, ch) %>% 
+        mutate(contiuous_gp = row_number() +
+                   as.integer(difftime(Sys.time(), gn_dt, units="mins"))) %>% 
+        summarise(n = n()) %>% 
+        filter(n >= 60)
+
+    # 2. 동일한 채널에 1시간 동안 접속을 유지하고 있는 고객 추출 (방법2)
+    raw_dt %>% 
+        mutate(rnk = row_number()) %>% 
+        group_by(usr_id, ch) %>% 
+        mutate(contiuous_gp = rnk - row_number()) %>% 
+        summarise(n = n()) %>% 
+        filter(n >= 60)
+    
+    # 3. 접속 주기 추출
+    raw_dt %>% 
+        group_by(usr_id) %>% 
+        mutate(next_gn_dt = lead(gn_dt, n = 1), 
+               diffmin=as.numeric(difftime(lead(gn_dt, n = 1), gn_dt, units="mins"))) %>% 
+        filter(diffmin > 1) %>% 
+        summarise(cnt_tm = mean(diffmin))
+        
+    ```
