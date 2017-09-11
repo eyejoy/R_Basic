@@ -233,7 +233,7 @@ library(tidyverse)
     ```
     
 
-    + periods: 시간을 주나 달로 표현*
+    + periods: 시간을 주나 달로 표현
     ```{r}
     seconds(15)
     minutes(10)
