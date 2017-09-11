@@ -1,21 +1,12 @@
 
----
-title: "R에서 날짜 타입 다루기"
-author: by Sung
-date: 2017-09-11
-output:
-  html_document:
-    toc: true
-    toc_float: true
-mainfont: NanumGothic
-fontsize: 12pt
+R에서 날짜 타입 다루기
 ---
 ```{r include=F}
 # global option
 # https://yihui.name/knitr/options/#code-chunk
 knitr::opts_chunk$set(
   comment = "#>",
-  collapse = TRUE,
+  collapse = T,
   eval=T,
   tidy=F,
   message=F,
