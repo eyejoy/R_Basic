@@ -1,4 +1,6 @@
-R에서 날짜 타입 다루기
+---
+title: "R에서 날짜 타입 다루기"
+output: github_document
 ---
 
 ```{r include=F}
