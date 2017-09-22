@@ -333,7 +333,7 @@ R 기초 정리
     str(func)
     ##> function (word = "hello world")  
     ##>  - attr(*, "srcref")=Class 'srcref'  atomic [1:8] 2 9 4 1 9 1 2 4
-    ##>   .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x00000000175e3ce8>
+    ##>   .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x000000000df01578>
     ```
 
 -   도움말: `help`, `?`
