@@ -33,7 +33,7 @@ knitr::opts_chunk$set(
     `numeric`/`double`  | 숫자                        | 2, 10.5
     `integer`           | 정수                        | 1, 5, 10 (입력시 `L`로 표기)
     `string`            | 문자                        | "a", "b"
-    `logical`           | Boolean 값                  | `TRUE` / `FALSE` (`T` / `F`로도 사용, 숫자형인 1 / 0 으로 변환 가능)
+    `logical`           | boolean 값                  | `TRUE` / `FALSE` (`T` / `F`로 사용 가능, 숫자형인 1 / 0 으로 변환 가능)
     `complex`           | 복소수                      | 1+3i
 
     ```{r}

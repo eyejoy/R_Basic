@@ -16,13 +16,13 @@ R 기초 정리
 
 -   R에서는 아래와 같은 데이터 타입을 사용하고 `str()`, `typeof()` 함수로 확인 가능
 
-    |        이름        |    설명    |                                                                  예제|
-    |:------------------:|:----------:|---------------------------------------------------------------------:|
-    | `numeric`/`double` |    숫자    |                                                               2, 10.5|
-    |      `integer`     |    정수    |                                          1, 5, 10 (입력시 `L`로 표기)|
-    |      `string`      |    문자    |                                                              "a", "b"|
-    |      `logical`     | Boolean 값 |  `TRUE` / `FALSE` (`T` / `F`로도 사용, 숫자형인 1 / 0 으로 변환 가능)|
-    |      `complex`     |   복소수   |                                                                  1+3i|
+    |        이름        |    설명    |                                                                     예제|
+    |:------------------:|:----------:|------------------------------------------------------------------------:|
+    | `numeric`/`double` |    숫자    |                                                                  2, 10.5|
+    |      `integer`     |    정수    |                                             1, 5, 10 (입력시 `L`로 표기)|
+    |      `string`      |    문자    |                                                                 "a", "b"|
+    |      `logical`     | boolean 값 |  `TRUE` / `FALSE` (`T` / `F`로 사용 가능, 숫자형인 1 / 0 으로 변환 가능)|
+    |      `complex`     |   복소수   |                                                                     1+3i|
 
     ``` r
     # numeric / double
@@ -333,7 +333,7 @@ R 기초 정리
     str(func)
     ##> function (word = "hello world")  
     ##>  - attr(*, "srcref")=Class 'srcref'  atomic [1:8] 2 9 4 1 9 1 2 4
-    ##>   .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x000000000df01578>
+    ##>   .. ..- attr(*, "srcfile")=Classes 'srcfilecopy', 'srcfile' <environment: 0x000000000df28968>
     ```
 
 -   도움말: `help`, `?`
