@@ -1,6 +1,14 @@
 ---
 title: "R에서 날짜 타입 다루기"
-output: github_document
+author: "성상모"
+date: "2017-09-23"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+mainfont: NanumGothic
+fontsize: 12pt
+lang: Korean
 ---
 
 ```{r include=F}

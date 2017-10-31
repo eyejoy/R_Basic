@@ -1,11 +1,11 @@
-
 ---
 title: "R 기초 정리"
 author: "성상모"
 date: "2017-09-23"
 output:
-  github_document:
+  html_document:
     toc: true
+    toc_float: true
 mainfont: NanumGothic
 fontsize: 12pt
 lang: Korean
@@ -422,9 +422,9 @@ knitr::opts_chunk$set(
     
     ```{r}
     # header = T
-    iris_raw <- read.csv("Iris.csv", header = T)
+    iris_raw <- read.csv("../data/Iris.csv", header = T)
     head(iris_raw)
     
     # header = F: 첫행에 header 값이 들어감
-    head(read.csv("Iris.csv", header = F))
+    head(read.csv("../data/Iris.csv", header = F))
     ```
