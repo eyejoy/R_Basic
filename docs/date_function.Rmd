@@ -1,7 +1,7 @@
 ---
 title: "R에서 날짜 타입 다루기"
-author: "성상모"
-date: "2017-09-23"
+author: "Sung"
+date: "2017-09-03"
 output:
   html_document:
     toc: true

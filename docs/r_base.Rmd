@@ -1,6 +1,6 @@
 ---
 title: "R 기초 정리"
-author: "성상모"
+author: "Sung"
 date: "2017-09-23"
 output:
   html_document:
@@ -193,7 +193,7 @@ knitr::opts_chunk$set(
     ```
 
 
-## 데이터 추출
+## 데이터 슬라이싱 (자르기)
 
 - 각 데이터 구조에서 데이터 원소에 접근 하는 것
 
@@ -349,7 +349,7 @@ knitr::opts_chunk$set(
     1 %/% 2
     
     # 제곱
-    1^2
+    1^2; 1**2
     
     # 루트
     sqrt(2)
@@ -363,10 +363,29 @@ knitr::opts_chunk$set(
     ```
 
 
-- 조건문 / 반복문: `if(조건){실행문}`, `for(반복조건){실행문}`
+- 요약값: `summary()`, `table()`
+
+    + `summary()`: 숫자형 벡터 요약 (출력값: 최소값, 1사분위수, 중위값, 평균, 3사분위수, 최대값)
+    + `table()`: 범주형 벡터의 범주별 건수 요약
+
+
+    ```{r}
+    # summary()
+    
+    aa <- c(1:50)
+    summary(aa)
+    
+    # table()
+    cc <- c("a", "a", "a", "a", "b", "b", "b", "c")
+    table(cc)
+    ```
+
+
+- 조건문 / 반복문: `if(조건){실행문}`, `for(반복조건){실행문}`, `ifelse(조건, Yes값, No값)`
 
     + `if(조건){실행문}`: 일반적인 프로그램의 조건문
     + `for(반복조건){실행문}`: 일반적인 프로그램의 반복문
+    + `ifelse(조건, Yes값, No값)`: 조건에 맞으면 Yes값 출력, 아니면 No값 출력
     
     ```{r}
     aa <- 1
@@ -392,6 +411,11 @@ knitr::opts_chunk$set(
        aa[i] <- 3*i
     }
     aa
+    
+    
+    # ifelse(): 2의 배수이면 2를 곱하고 아니면 0 출력
+    aa <- c(1:5)
+    ifelse(aa%%2 == 0, aa*2, 0)
     ```
     
 
@@ -428,3 +452,170 @@ knitr::opts_chunk$set(
     # header = F: 첫행에 header 값이 들어감
     head(read.csv("../data/Iris.csv", header = F))
     ```
+
+
+## 데이터 전처리 (`dplyr` 패키지)
+
+- 전처리는 데이터를 분석하기 좋은 형태로 만드는 것
+    
+    + 데이터 추출, 파생변수 생성, 결측지 처리, 이상치 처리 등
+    + 관련 패키지: `dplyr`
+    
+- `dplyr` 패키지
+    
+    + `dplyr`은 `Data Frame`에서 동작 (`tibble`도 `Data Frame`임)
+    + 주요 함수들: `select()`, `filter()`, `mutate()`, `rename()`, `group_by()`, `summarise()`, `arrange()`, `ungroup()`, `%>%`, `rowwise()`
+    
+
+- `select()`, `filter()`, `mutate()`, `rename()`
+    
+    + `select()`: 순서에 맞게 열이름에 해당하는 열만 추출 (sql문의 select 역할)
+    + `filter()`: 조건에 맞는 행을 추출 (sql문의 where 역할)
+    + `mutate()`: 파생변수 생성 함수로 열의 합이나 window function이 가능 (sql문의 select 역할)
+    + `rename()`: 열이름 변경 (바꿀 열이름 = 기존 열이름)
+
+    ```{r}
+    library(dplyr)
+    
+    # select(): 해당 열 추출
+    head(select(iris, Sepal.Length), 3)
+    
+    # select(): 해당 열을 제외하고 추출
+    head(select(iris, -Sepal.Length), 3)
+    
+    # filter(): Sepal.Length가 6이상인 행 추출
+    head(filter(iris, Sepal.Length >= 6), 3)
+    
+    # mutate(): mean_length 추가
+    head(mutate(iris, mean_length = (Sepal.Length + Petal.Length) / 2), 3)
+    
+    # mutate(): window function 사용
+    head(mutate(iris, row_num = row_number()), 3)
+    
+    # rename(): Petal.Length을 petal_length으로 변경
+    head(rename(iris, petal_length = Petal.Length), 3)
+    ```
+
+
+- `group_by()`, `summarise()`, `arrange()`, `ungroup()`, `rowwise()`
+
+    + `group_by()`: 그룹 연산을 위해, 그룹으로 생성할 열을 지정 (sql문의 group by 역할)
+    + `ungroup()`: 그룹 연산 후 그룹을 해제할 때 사용 (pipe line을 사용할 때 주로 사용)
+    + `summarise()`: 그룹 연산에서 생성할 통계량 입력 (sql문의 select 역할 - count(), sum() 등)
+    + `arrange()`: 어떤 열에 대한 정렬 (sql문의 order by 역할)
+    + `rowwise()`는 전체 행을 group by를 하는 것 (`do()`문장을 활용할 수 있음)
+
+    ```{r}
+    library(dplyr)
+    
+    # `group_by()`
+    head(group_by(iris, Species), 3)
+    
+    # `ungroup()`
+    head(ungroup(group_by(iris, Species)), 3)
+    
+    # `group_by()`, `summarise()`
+    head(summarise(group_by(iris, Species), mean_sepal_length = mean(Sepal.Length), n = n()))
+    
+    # arrange(): 오름차순 정렬
+    head(arrange(iris, Sepal.Length), 3)
+    
+    # arrange(): 내림차순 정렬
+    head(arrange(iris, desc(Sepal.Length)), 3)
+    
+    # length 열들의 각 행별 최소값, 최대값, 평균, 중앙값 계산: group_by() 사용
+    iris %>% 
+        head(3) %>% 
+        group_by(1:n()) %>% 
+        mutate(min_length = min(Sepal.Length, Petal.Length),
+               max_length = max(Sepal.Length, Petal.Length),
+               mean_length = mean(Sepal.Length, Petal.Length),
+               median_length = median(Sepal.Length, Petal.Length))
+    
+    # length 열들의 각 행별 최소값, 최대값, 평균, 중앙값 계산: rowwise() 사용
+    iris %>% 
+        head(3) %>% 
+        rowwise() %>% 
+        mutate(min_length = min(Sepal.Length, Petal.Length),
+               max_length = max(Sepal.Length, Petal.Length),
+               mean_length = mean(Sepal.Length, Petal.Length),
+               median_length = median(Sepal.Length, Petal.Length))
+    ```
+
+
+- `%>%`(pipe operator)
+    
+    + pipe operator은 `dplyr`패키지의 함수들을 연결하여 추출 순서대로 쉽게 코드 작성이 가능하게 함
+    + RStudio의 단축키로 Windows: `Ctrl+Shift+m`, Mac: `Cmd+Shift+M`
+    + pipe operator으로 연결되었을 때 data 부분은 "."으로 표현되는데 이 의미는 앞의 데이터 처리 결과를 표현함
+
+    ```{r}
+    iris %>% 
+        filter(Sepal.Length >= 6) %>% 
+        mutate(mean_length = (Sepal.Length + Petal.Length) / 2) %>% 
+        select(-Sepal.Length) %>% 
+        head(3)
+    ```
+
+
+- `do()`
+
+    + `do()`는 pipe operator으로 연결된 데이터에 특정 함수를 적용이 가능하도록 함
+    
+    ```{r}
+    # do()
+    iris %>% 
+        group_by(Species) %>%
+        do(sl_range = range(.$Sepal.Length)) %>%
+        summarise(Species, sl_range = sprintf("%.1f-%.1f", sl_range[1], sl_range[2]))
+    
+    # do()와 동일한 결과
+    iris %>% 
+        group_by(Species) %>%
+        summarise(sl_range = sprintf("%.1f-%.1f", range(Sepal.Length)[1], range(Sepal.Length)[2]))
+    
+    # do() 문장에 lm() 사용
+    library(broom)
+    mtcars %>%
+        group_by(cyl) %>%
+        do(mod = lm(mpg ~ vs, data = .)) %>% 
+        tidy(mod)
+    
+    # do() 문장에 lm() 사용
+    mtcars %>%
+        group_by(cyl) %>%
+        do(mod = lm(mpg ~ vs, data = .)) %>% 
+        glance(mod)
+
+    
+    ```
+
+    + 참고: http://stat545.com/block023_dplyr-do.html
+
+
+
+
+
+
+
+## [참고] RStudio 주요 단축키
+
+- RStudio를 편리하게 사용하기 위해 단축키 제공
+    
+     내용                              |  Window               | Mac 
+   :----------------------------------:|:---------------------:|:-------------------------:
+   Insert chunk (Sweave and Knitr)     | `Ctrl+Alt+I`          | `Command+Option+I`
+   Run current line/selection          | `Ctrl+Enter`          | `Command+Enter`
+   Undo                                | `Ctrl+Z`              | `Command+Z`
+   Redo                                | `Ctrl+Shift+Z`        | `Command+Shift+Z`
+   Cut                                 | `Ctrl+X`              | `Command+X`
+   Copy                                | `Ctrl+C`              | `Command+C`
+   Paste                               | `Ctrl+V`              | `Command+V`
+   Select All                          | `Ctrl+A`              | `Command+A`
+   Insert assignment operator          | `Alt+-`            | `Option+-`
+   Insert pipe operator                | `Ctrl+Shift+M`        | `Cmd+Shift+M`                                         
+
+    + 더보기: https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts
+
+
+

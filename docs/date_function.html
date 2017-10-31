@@ -9,9 +9,9 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="성상모" />
+<meta name="author" content="Sung" />
 
-<meta name="date" content="2017-09-23" />
+<meta name="date" content="2017-09-03" />
 
 <title>R에서 날짜 타입 다루기</title>
 
@@ -216,8 +216,8 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">R에서 날짜 타입 다루기</h1>
-<h4 class="author"><em>성상모</em></h4>
-<h4 class="date"><em>2017-09-23</em></h4>
+<h4 class="author"><em>Sung</em></h4>
+<h4 class="date"><em>2017-09-03</em></h4>
 
 </div>
 
@@ -389,7 +389,7 @@ strftime(test_date, &quot;%Y&quot;)
 <li><p>함수: <code>format</code>, <code>as.Date</code>, <code>strptime</code>, <code>as.POSIXlt</code></p>
 <pre class="r"><code># format function
 format(Sys.time(), &quot;%a, %A, %b, %B, %d, %D, %X, %Y , %Z&quot;)
-#&gt; [1] &quot;수, 수요일, 11, 11월, 01, 11/01/17, 오전 12:45:17, 2017 , KST&quot;
+#&gt; [1] &quot;수, 수요일, 11, 11월, 01, 11/01/17, 오전 1:07:42, 2017 , KST&quot;
 format(&quot;170906&quot;, format=&quot;%y%m%d&quot;)
 #&gt; [1] &quot;170906&quot;
 
@@ -471,7 +471,7 @@ difftime(c2, c1, units=&quot;days&quot;)
 <pre class="r"><code>today()
 #&gt; [1] &quot;2017-11-01&quot;
 now()
-#&gt; [1] &quot;2017-11-01 00:45:17 KST&quot;</code></pre></li>
+#&gt; [1] &quot;2017-11-01 01:07:42 KST&quot;</code></pre></li>
 <li><p><strong>문자열 &gt;&gt; 날짜 데이터로 변환</strong></p>
 <pre class="r"><code>ymd(&quot;2017-01-31&quot;)
 #&gt; [1] &quot;2017-01-31&quot;

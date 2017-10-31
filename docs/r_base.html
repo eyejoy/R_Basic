@@ -9,7 +9,7 @@
 <meta name="generator" content="pandoc" />
 
 
-<meta name="author" content="성상모" />
+<meta name="author" content="Sung" />
 
 <meta name="date" content="2017-09-23" />
 
@@ -216,7 +216,7 @@ div.tocify {
 
 
 <h1 class="title toc-ignore">R 기초 정리</h1>
-<h4 class="author"><em>성상모</em></h4>
+<h4 class="author"><em>Sung</em></h4>
 <h4 class="date"><em>2017-09-23</em></h4>
 
 </div>
@@ -488,8 +488,8 @@ c(1, 2, 3, NA)
 ##&gt; [1]  1  2  3 NA</code></pre></li>
 </ul>
 </div>
-<div id="-" class="section level2">
-<h2>데이터 추출</h2>
+<div id="--" class="section level2">
+<h2>데이터 슬라이싱 (자르기)</h2>
 <ul>
 <li><p>각 데이터 구조에서 데이터 원소에 접근 하는 것</p>
 <ul>
@@ -585,7 +585,7 @@ func(word = &quot;hello world!!!!&quot;)
 str(func)
 ##&gt; function (word = &quot;hello world&quot;)  
 ##&gt;  - attr(*, &quot;srcref&quot;)=Class 'srcref'  atomic [1:8] 2 9 4 1 9 1 2 4
-##&gt;   .. ..- attr(*, &quot;srcfile&quot;)=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x0000000012374748&gt;</code></pre></li>
+##&gt;   .. ..- attr(*, &quot;srcfile&quot;)=Classes 'srcfilecopy', 'srcfile' &lt;environment: 0x00000000125b2ed8&gt;</code></pre></li>
 <li><p>도움말: <code>help</code>, <code>?</code></p>
 <ul>
 <li>함수에 대한 설명, 리턴 값, 샘플 코드 제공</li>
@@ -688,7 +688,8 @@ strrep(&quot;X&quot;, 3)
 ##&gt; [1] 0
 
 # 제곱
-1^2
+1^2; 1**2
+##&gt; [1] 1
 ##&gt; [1] 1
 
 # 루트
@@ -704,10 +705,29 @@ matrix(c(1, 2, 3, 4), 2) + matrix(c(2, 5, 4, 7), 2)
 ##&gt;      [,1] [,2]
 ##&gt; [1,]    3    7
 ##&gt; [2,]    7   11</code></pre></li>
-<li><p>조건문 / 반복문: <code>if(조건){실행문}</code>, <code>for(반복조건){실행문}</code></p>
+<li><p>요약값: <code>summary()</code>, <code>table()</code></p>
+<ul>
+<li><code>summary()</code>: 숫자형 벡터 요약 (출력값: 최소값, 1사분위수, 중위값, 평균, 3사분위수, 최대값)</li>
+<li><code>table()</code>: 범주형 벡터의 범주별 건수 요약</li>
+</ul>
+<pre class="r"><code># summary()
+
+aa &lt;- c(1:50)
+summary(aa)
+##&gt;    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+##&gt;    1.00   13.25   25.50   25.50   37.75   50.00
+
+# table()
+cc &lt;- c(&quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;a&quot;, &quot;b&quot;, &quot;b&quot;, &quot;b&quot;, &quot;c&quot;)
+table(cc)
+##&gt; cc
+##&gt; a b c 
+##&gt; 4 3 1</code></pre></li>
+<li><p>조건문 / 반복문: <code>if(조건){실행문}</code>, <code>for(반복조건){실행문}</code>, <code>ifelse(조건, Yes값, No값)</code></p>
 <ul>
 <li><code>if(조건){실행문}</code>: 일반적인 프로그램의 조건문</li>
 <li><code>for(반복조건){실행문}</code>: 일반적인 프로그램의 반복문</li>
+<li><code>ifelse(조건, Yes값, No값)</code>: 조건에 맞으면 Yes값 출력, 아니면 No값 출력</li>
 </ul>
 <pre class="r"><code>aa &lt;- 1
 
@@ -738,7 +758,13 @@ for(i in 1:5){
    aa[i] &lt;- 3*i
 }
 aa
-##&gt; [1]  3  6  9 12 15</code></pre></li>
+##&gt; [1]  3  6  9 12 15
+
+
+# ifelse(): 2의 배수이면 2를 곱하고 아니면 0 출력
+aa &lt;- c(1:5)
+ifelse(aa%%2 == 0, aa*2, 0)
+##&gt; [1] 0 4 0 8 0</code></pre></li>
 </ul>
 </div>
 <div id="-" class="section level2">
@@ -784,6 +810,305 @@ head(read.csv(&quot;../data/Iris.csv&quot;, header = F))
 ##&gt; 4  3           4.7          3.2           1.3          0.2 Iris-setosa
 ##&gt; 5  4           4.6          3.1           1.5          0.2 Iris-setosa
 ##&gt; 6  5           5.0          3.6           1.4          0.2 Iris-setosa</code></pre></li>
+</ul>
+</div>
+<div id="--dplyr-" class="section level2">
+<h2>데이터 전처리 (<code>dplyr</code> 패키지)</h2>
+<ul>
+<li><p>전처리는 데이터를 분석하기 좋은 형태로 만드는 것</p>
+<ul>
+<li>데이터 추출, 파생변수 생성, 결측지 처리, 이상치 처리 등</li>
+<li>관련 패키지: <code>dplyr</code></li>
+</ul></li>
+<li><p><code>dplyr</code> 패키지</p>
+<ul>
+<li><code>dplyr</code>은 <code>Data Frame</code>에서 동작 (<code>tibble</code>도 <code>Data Frame</code>임)</li>
+<li>주요 함수들: <code>select()</code>, <code>filter()</code>, <code>mutate()</code>, <code>rename()</code>, <code>group_by()</code>, <code>summarise()</code>, <code>arrange()</code>, <code>ungroup()</code>, <code>%&gt;%</code>, <code>rowwise()</code></li>
+</ul></li>
+<li><p><code>select()</code>, <code>filter()</code>, <code>mutate()</code>, <code>rename()</code></p>
+<ul>
+<li><code>select()</code>: 순서에 맞게 열이름에 해당하는 열만 추출 (sql문의 select 역할)</li>
+<li><code>filter()</code>: 조건에 맞는 행을 추출 (sql문의 where 역할)</li>
+<li><code>mutate()</code>: 파생변수 생성 함수로 열의 합이나 window function이 가능 (sql문의 select 역할)</li>
+<li><code>rename()</code>: 열이름 변경 (바꿀 열이름 = 기존 열이름)</li>
+</ul>
+<pre class="r"><code>library(dplyr)
+
+# select(): 해당 열 추출
+head(select(iris, Sepal.Length), 3)
+##&gt;   Sepal.Length
+##&gt; 1          5.1
+##&gt; 2          4.9
+##&gt; 3          4.7
+
+# select(): 해당 열을 제외하고 추출
+head(select(iris, -Sepal.Length), 3)
+##&gt;   Sepal.Width Petal.Length Petal.Width Species
+##&gt; 1         3.5          1.4         0.2  setosa
+##&gt; 2         3.0          1.4         0.2  setosa
+##&gt; 3         3.2          1.3         0.2  setosa
+
+# filter(): Sepal.Length가 6이상인 행 추출
+head(filter(iris, Sepal.Length &gt;= 6), 3)
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width    Species
+##&gt; 1          7.0         3.2          4.7         1.4 versicolor
+##&gt; 2          6.4         3.2          4.5         1.5 versicolor
+##&gt; 3          6.9         3.1          4.9         1.5 versicolor
+
+# mutate(): mean_length 추가
+head(mutate(iris, mean_length = (Sepal.Length + Petal.Length) / 2), 3)
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species mean_length
+##&gt; 1          5.1         3.5          1.4         0.2  setosa        3.25
+##&gt; 2          4.9         3.0          1.4         0.2  setosa        3.15
+##&gt; 3          4.7         3.2          1.3         0.2  setosa        3.00
+
+# mutate(): window function 사용
+head(mutate(iris, row_num = row_number()), 3)
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species row_num
+##&gt; 1          5.1         3.5          1.4         0.2  setosa       1
+##&gt; 2          4.9         3.0          1.4         0.2  setosa       2
+##&gt; 3          4.7         3.2          1.3         0.2  setosa       3
+
+# rename(): Petal.Length을 petal_length으로 변경
+head(rename(iris, petal_length = Petal.Length), 3)
+##&gt;   Sepal.Length Sepal.Width petal_length Petal.Width Species
+##&gt; 1          5.1         3.5          1.4         0.2  setosa
+##&gt; 2          4.9         3.0          1.4         0.2  setosa
+##&gt; 3          4.7         3.2          1.3         0.2  setosa</code></pre></li>
+<li><p><code>group_by()</code>, <code>summarise()</code>, <code>arrange()</code>, <code>ungroup()</code>, <code>rowwise()</code></p>
+<ul>
+<li><code>group_by()</code>: 그룹 연산을 위해, 그룹으로 생성할 열을 지정 (sql문의 group by 역할)</li>
+<li><code>ungroup()</code>: 그룹 연산 후 그룹을 해제할 때 사용 (pipe line을 사용할 때 주로 사용)</li>
+<li><code>summarise()</code>: 그룹 연산에서 생성할 통계량 입력 (sql문의 select 역할 - count(), sum() 등)</li>
+<li><code>arrange()</code>: 어떤 열에 대한 정렬 (sql문의 order by 역할)</li>
+<li><code>rowwise()</code>는 전체 행을 group by를 하는 것 (<code>do()</code>문장을 활용할 수 있음)</li>
+</ul>
+<pre class="r"><code>library(dplyr)
+
+# `group_by()`
+head(group_by(iris, Species), 3)
+##&gt; # A tibble: 3 x 5
+##&gt; # Groups:   Species [1]
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;  &lt;fctr&gt;
+##&gt; 1          5.1         3.5          1.4         0.2  setosa
+##&gt; 2          4.9         3.0          1.4         0.2  setosa
+##&gt; 3          4.7         3.2          1.3         0.2  setosa
+
+# `ungroup()`
+head(ungroup(group_by(iris, Species)), 3)
+##&gt; # A tibble: 3 x 5
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;  &lt;fctr&gt;
+##&gt; 1          5.1         3.5          1.4         0.2  setosa
+##&gt; 2          4.9         3.0          1.4         0.2  setosa
+##&gt; 3          4.7         3.2          1.3         0.2  setosa
+
+# `group_by()`, `summarise()`
+head(summarise(group_by(iris, Species), mean_sepal_length = mean(Sepal.Length), n = n()))
+##&gt; # A tibble: 3 x 3
+##&gt;      Species mean_sepal_length     n
+##&gt;       &lt;fctr&gt;             &lt;dbl&gt; &lt;int&gt;
+##&gt; 1     setosa             5.006    50
+##&gt; 2 versicolor             5.936    50
+##&gt; 3  virginica             6.588    50
+
+# arrange(): 오름차순 정렬
+head(arrange(iris, Sepal.Length), 3)
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+##&gt; 1          4.3         3.0          1.1         0.1  setosa
+##&gt; 2          4.4         2.9          1.4         0.2  setosa
+##&gt; 3          4.4         3.0          1.3         0.2  setosa
+
+# arrange(): 내림차순 정렬
+head(arrange(iris, desc(Sepal.Length)), 3)
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width   Species
+##&gt; 1          7.9         3.8          6.4         2.0 virginica
+##&gt; 2          7.7         3.8          6.7         2.2 virginica
+##&gt; 3          7.7         2.6          6.9         2.3 virginica
+
+# length 열들의 각 행별 최소값, 최대값, 평균, 중앙값 계산: group_by() 사용
+iris %&gt;% 
+    head(3) %&gt;% 
+    group_by(1:n()) %&gt;% 
+    mutate(min_length = min(Sepal.Length, Petal.Length),
+           max_length = max(Sepal.Length, Petal.Length),
+           mean_length = mean(Sepal.Length, Petal.Length),
+           median_length = median(Sepal.Length, Petal.Length))
+##&gt; # A tibble: 3 x 10
+##&gt; # Groups:   1:n() [3]
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species `1:n()`
+##&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;  &lt;fctr&gt;   &lt;int&gt;
+##&gt; 1          5.1         3.5          1.4         0.2  setosa       1
+##&gt; 2          4.9         3.0          1.4         0.2  setosa       2
+##&gt; 3          4.7         3.2          1.3         0.2  setosa       3
+##&gt; # ... with 4 more variables: min_length &lt;dbl&gt;, max_length &lt;dbl&gt;,
+##&gt; #   mean_length &lt;dbl&gt;, median_length &lt;dbl&gt;
+
+# length 열들의 각 행별 최소값, 최대값, 평균, 중앙값 계산: rowwise() 사용
+iris %&gt;% 
+    head(3) %&gt;% 
+    rowwise() %&gt;% 
+    mutate(min_length = min(Sepal.Length, Petal.Length),
+           max_length = max(Sepal.Length, Petal.Length),
+           mean_length = mean(Sepal.Length, Petal.Length),
+           median_length = median(Sepal.Length, Petal.Length))
+##&gt; Source: local data frame [3 x 9]
+##&gt; Groups: &lt;by row&gt;
+##&gt; 
+##&gt; # A tibble: 3 x 9
+##&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species min_length
+##&gt;          &lt;dbl&gt;       &lt;dbl&gt;        &lt;dbl&gt;       &lt;dbl&gt;  &lt;fctr&gt;      &lt;dbl&gt;
+##&gt; 1          5.1         3.5          1.4         0.2  setosa        1.4
+##&gt; 2          4.9         3.0          1.4         0.2  setosa        1.4
+##&gt; 3          4.7         3.2          1.3         0.2  setosa        1.3
+##&gt; # ... with 3 more variables: max_length &lt;dbl&gt;, mean_length &lt;dbl&gt;,
+##&gt; #   median_length &lt;dbl&gt;</code></pre></li>
+<li><p><code>%&gt;%</code>(pipe operator)</p>
+<ul>
+<li>pipe operator은 <code>dplyr</code>패키지의 함수들을 연결하여 추출 순서대로 쉽게 코드 작성이 가능하게 함</li>
+<li>RStudio의 단축키로 Windows: <code>Ctrl+Shift+m</code>, Mac: <code>Cmd+Shift+M</code></li>
+<li>pipe operator으로 연결되었을 때 data 부분은 “.”으로 표현되는데 이 의미는 앞의 데이터 처리 결과를 표현함</li>
+</ul>
+<pre class="r"><code>iris %&gt;% 
+    filter(Sepal.Length &gt;= 6) %&gt;% 
+    mutate(mean_length = (Sepal.Length + Petal.Length) / 2) %&gt;% 
+    select(-Sepal.Length) %&gt;% 
+    head(3)
+##&gt;   Sepal.Width Petal.Length Petal.Width    Species mean_length
+##&gt; 1         3.2          4.7         1.4 versicolor        5.85
+##&gt; 2         3.2          4.5         1.5 versicolor        5.45
+##&gt; 3         3.1          4.9         1.5 versicolor        5.90</code></pre></li>
+<li><p><code>do()</code></p>
+<ul>
+<li><code>do()</code>는 pipe operator으로 연결된 데이터에 특정 함수를 적용이 가능하도록 함</li>
+</ul>
+<pre class="r"><code># do()
+iris %&gt;% 
+    group_by(Species) %&gt;%
+    do(sl_range = range(.$Sepal.Length)) %&gt;%
+    summarise(Species, sl_range = sprintf(&quot;%.1f-%.1f&quot;, sl_range[1], sl_range[2]))
+##&gt; # A tibble: 3 x 2
+##&gt;      Species sl_range
+##&gt;       &lt;fctr&gt;    &lt;chr&gt;
+##&gt; 1     setosa  4.3-5.8
+##&gt; 2 versicolor  4.9-7.0
+##&gt; 3  virginica  4.9-7.9
+
+# do()와 동일한 결과
+iris %&gt;% 
+    group_by(Species) %&gt;%
+    summarise(sl_range = sprintf(&quot;%.1f-%.1f&quot;, range(Sepal.Length)[1], range(Sepal.Length)[2]))
+##&gt; # A tibble: 3 x 2
+##&gt;      Species sl_range
+##&gt;       &lt;fctr&gt;    &lt;chr&gt;
+##&gt; 1     setosa  4.3-5.8
+##&gt; 2 versicolor  4.9-7.0
+##&gt; 3  virginica  4.9-7.9
+
+# do() 문장에 lm() 사용
+library(broom)
+mtcars %&gt;%
+    group_by(cyl) %&gt;%
+    do(mod = lm(mpg ~ vs, data = .)) %&gt;% 
+    tidy(mod)
+##&gt; # A tibble: 5 x 6
+##&gt; # Groups:   cyl [3]
+##&gt;     cyl        term  estimate std.error  statistic      p.value
+##&gt;   &lt;dbl&gt;       &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt;
+##&gt; 1     4 (Intercept) 26.000000 4.7481107  5.4758622 3.922637e-04
+##&gt; 2     4          vs  0.730000 4.9798606  0.1465905 8.866864e-01
+##&gt; 3     6 (Intercept) 20.566667 0.7794941 26.3846329 1.461799e-06
+##&gt; 4     6          vs -1.441667 1.0311738 -1.3980831 2.209441e-01
+##&gt; 5     8 (Intercept) 15.100000 0.6842016 22.0695178 1.092804e-11
+
+# do() 문장에 lm() 사용
+mtcars %&gt;%
+    group_by(cyl) %&gt;%
+    do(mod = lm(mpg ~ vs, data = .)) %&gt;% 
+    glance(mod)
+##&gt; # A tibble: 3 x 12
+##&gt; # Groups:   cyl [3]
+##&gt;     cyl   r.squared adj.r.squared    sigma  statistic   p.value    df
+##&gt;   &lt;dbl&gt;       &lt;dbl&gt;         &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;
+##&gt; 1     4 0.002381953    -0.1084645 4.748111 0.02148876 0.8866864     2
+##&gt; 2     6 0.281055142     0.1372662 1.350123 1.95463629 0.2209441     2
+##&gt; 3     8 0.000000000     0.0000000 2.560048         NA        NA     1
+##&gt; # ... with 5 more variables: logLik &lt;dbl&gt;, AIC &lt;dbl&gt;, BIC &lt;dbl&gt;,
+##&gt; #   deviance &lt;dbl&gt;, df.residual &lt;int&gt;</code></pre>
+<ul>
+<li>참고: <a href="http://stat545.com/block023_dplyr-do.html" class="uri">http://stat545.com/block023_dplyr-do.html</a></li>
+</ul></li>
+</ul>
+</div>
+<div id="-rstudio--" class="section level2">
+<h2>[참고] RStudio 주요 단축키</h2>
+<ul>
+<li><p>RStudio를 편리하게 사용하기 위해 단축키 제공</p>
+<table>
+<thead>
+<tr class="header">
+<th align="center">내용</th>
+<th align="center">Window</th>
+<th align="center">Mac</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="center">Insert chunk (Sweave and Knitr)</td>
+<td align="center"><code>Ctrl+Alt+I</code></td>
+<td align="center"><code>Command+Option+I</code></td>
+</tr>
+<tr class="even">
+<td align="center">Run current line/selection</td>
+<td align="center"><code>Ctrl+Enter</code></td>
+<td align="center"><code>Command+Enter</code></td>
+</tr>
+<tr class="odd">
+<td align="center">Undo</td>
+<td align="center"><code>Ctrl+Z</code></td>
+<td align="center"><code>Command+Z</code></td>
+</tr>
+<tr class="even">
+<td align="center">Redo</td>
+<td align="center"><code>Ctrl+Shift+Z</code></td>
+<td align="center"><code>Command+Shift+Z</code></td>
+</tr>
+<tr class="odd">
+<td align="center">Cut</td>
+<td align="center"><code>Ctrl+X</code></td>
+<td align="center"><code>Command+X</code></td>
+</tr>
+<tr class="even">
+<td align="center">Copy</td>
+<td align="center"><code>Ctrl+C</code></td>
+<td align="center"><code>Command+C</code></td>
+</tr>
+<tr class="odd">
+<td align="center">Paste</td>
+<td align="center"><code>Ctrl+V</code></td>
+<td align="center"><code>Command+V</code></td>
+</tr>
+<tr class="even">
+<td align="center">Select All</td>
+<td align="center"><code>Ctrl+A</code></td>
+<td align="center"><code>Command+A</code></td>
+</tr>
+<tr class="odd">
+<td align="center">Insert assignment operator</td>
+<td align="center"><code>Alt+-</code></td>
+<td align="center"><code>Option+-</code></td>
+</tr>
+<tr class="even">
+<td align="center">Insert pipe operator</td>
+<td align="center"><code>Ctrl+Shift+M</code></td>
+<td align="center"><code>Cmd+Shift+M</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>더보기: <a href="https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts" class="uri">https://support.rstudio.com/hc/en-us/articles/200711853-Keyboard-Shortcuts</a></li>
+</ul></li>
 </ul>
 </div>
 
